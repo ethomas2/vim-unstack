@@ -7,7 +7,7 @@ endif
 augroup unstack_sign_clear
   autocmd!
   autocmd TabEnter * call unstack#RemoveSignsFromClosedTabs()
-augroup end 
+augroup end
 "}}}
 "unstack#Unstack(selection_type) called by hotkeys {{{
 function! unstack#Unstack(selection_type)
@@ -113,7 +113,7 @@ function! unstack#GetSelectedText(selection_type)
 endfunction
 "}}}
 "unstack#ExtractFilesFromText(stacktrace) extract files and lines from a stacktrace {{{
-"return [[file1, line1], [file2, line2] ... ] from a stacktrace 
+"return [[file1, line1], [file2, line2] ... ] from a stacktrace
 "tries each extractor in order and stops when an extractor returns a non-empty
 "stack
 function! unstack#ExtractFilesFromText(text)
@@ -188,7 +188,7 @@ function! unstack#GetOpenTabIds()
   let open_tab_ids = []
   tabdo if exists('t:unstack_tabId') | call add(open_tab_ids, string(t:unstack_tabId)) | endif
   "jump back to prev. tab
-  execute "tabnext" curTab 
+  execute "tabnext" curTab
   return open_tab_ids
 endfunction
 "}}}
@@ -216,10 +216,10 @@ endfunction
 "unstack#GetLayout() returns layout setting ("portrait"/"landscape") {{{
 function! unstack#GetLayout()
   let layout = get(g:, "unstack_layout", "landscape")
-  if layout == "landscape" || layout == "portrait"
+  if layout == "landscape" || layout == "portrait" || layout == "none"
     return layout
   else
-    throw "g:unstack_layout must be portrait or landscape"
+    throw "g:unstack_layout must be one of portrait, landscape or none"
   endif
 endfunction
 "}}}
@@ -235,12 +235,15 @@ endfunction
 "unstack#SplitWindow() split window horizontally/vertically based on layout{{{
 function! unstack#SplitWindow()
   let layout = unstack#GetLayout()
-  if layout == "landscape"
-    let split_cmd = "vnew"
-  else
-    let split_cmd = "new"
+  if layout == "landscape" || layout == "portrait"
+    if layout == "landscape"
+      let split_cmd = "vnew"
+    else
+      let split_cmd = "new"
+    endif
+    execute "botright" split_cmd
   endif
-  execute "botright" split_cmd
+  " Otherwise layout is none. Do nothing
 endfunction
 "}}}
 " vim: et sw=2 sts=2 foldmethod=marker foldmarker={{{,}}}
